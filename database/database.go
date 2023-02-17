@@ -56,13 +56,21 @@ func ConnectDB() {
 	fmt.Println("connected to DB")
 }
 
+// add a new event
+func AddEvent(event Event) {
+	result := DB.Create(&event)
+	if result.Error != nil {
+		log.Fatal("Error adding event", result.Error)
+	}
+}
+
 // creates a new user if not already existing
-func CreateUser(user User, db *gorm.DB) {
+func CreateUser(user User) {
 	// checking if user already exists
-	result := db.Where("email = ?", user.Email).First(&user)
+	result := DB.Where("email = ?", user.Email).First(&user)
 
 	if result.RowsAffected == 0 {
-		result = db.Create(&user)
+		result = DB.Create(&user)
 		if result.Error != nil {
 			log.Fatal("Error creating user", result.Error)
 		}

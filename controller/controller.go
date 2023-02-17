@@ -38,9 +38,20 @@ func GoogleCallback(ctx *fiber.Ctx) error {
 	if err != nil {
 		log.Fatal("Error converting user data to struct", err)
 	}
-	database.CreateUser(user, database.DB)
+	database.CreateUser(user)
 
 	err = ctx.Redirect("/")
+	return err
+}
+
+func AddEvent(ctx *fiber.Ctx) error {
+	body := new(database.Event)
+	err := ctx.BodyParser(body)
+	if err != nil {
+		log.Fatal("Cannot parse params", err)
+	}
+	database.AddEvent(*body)
+	err = ctx.SendStatus(fiber.StatusOK)
 	return err
 }
 
