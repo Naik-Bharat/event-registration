@@ -2,9 +2,11 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 
 	config "github.com/Naik-Bharat/event-registration/auth"
 	"github.com/Naik-Bharat/event-registration/database"
@@ -52,6 +54,20 @@ func AddEvent(ctx *fiber.Ctx) error {
 	}
 	database.AddEvent(*body)
 	err = ctx.SendStatus(fiber.StatusOK)
+	return err
+}
+
+func BookTicket(ctx *fiber.Ctx) error {
+	body := ctx.AllParams()
+	fmt.Println(body)
+	userID, err := strconv.Atoi(body["user_id"])
+	eventID, err := strconv.Atoi(body["eventID"])
+	ticket := database.Ticket{
+		UserID:  uint(userID),
+		EventID: uint(eventID),
+	}
+	database.BookTicket(ticket)
+	err = ctx.SendString("hello")
 	return err
 }
 

@@ -64,6 +64,13 @@ func AddEvent(event Event) {
 	}
 }
 
+func BookTicket(ticket Ticket) {
+	result := DB.Create(&ticket)
+	if result.Error != nil {
+		log.Fatal("Error adding ticket", result.Error)
+	}
+}
+
 // creates a new user if not already existing
 func CreateUser(user User) {
 	// checking if user already exists

@@ -18,6 +18,7 @@ func main() {
 	app.Get("/auth/google/callback", controller.GoogleCallback)
 	app.Get("/", controller.Index)
 
+	app.Post("/api/book_ticket", controller.BookTicket)
 	app.Post("/api/add_event", controller.AddEvent)
 	app.Listen(":8080")
 }
