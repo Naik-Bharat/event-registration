@@ -53,7 +53,7 @@ func ConnectDB() {
 	if err != nil {
 		log.Fatal("Error opening DB", err)
 	}
-	fmt.Println("connected to DB")
+	fmt.Println("Connected to Database")
 }
 
 // add a new event
@@ -85,4 +85,5 @@ func CreateUser(user User) error {
 // sets up database schema
 func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(&User{}, &Event{}, &Ticket{})
+	fmt.Println("Migrated to Database")
 }

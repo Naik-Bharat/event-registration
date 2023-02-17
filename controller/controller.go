@@ -67,6 +67,8 @@ func AddEvent(ctx *fiber.Ctx) error {
 		err = ctx.SendStatus(fiber.StatusInternalServerError)
 		return err
 	}
+
+	fmt.Println("Added Event", body)
 	err = ctx.SendStatus(fiber.StatusOK)
 	return err
 }
@@ -91,9 +93,9 @@ func BookTicket(ctx *fiber.Ctx) error {
 		EventID: uint(eventID),
 	}
 	database.BookTicket(ticket)
-	fmt.Println("Booked ticket for user", userID, "event", eventID)
 
-	err = ctx.SendString("hello")
+	fmt.Println("Booked ticket", body)
+	err = ctx.SendStatus(fiber.StatusOK)
 	return err
 }
 
