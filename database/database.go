@@ -13,11 +13,10 @@ import (
 
 // Database schemas
 type User struct {
-	ID        uint
-	Name      string
-	Email     string `gorm:"unique"`
-	FirstName string
-	LastName  string
+	ID        uint    `json:"-"`
+	Email     string  `gorm:"unique" json:"email"`
+	FirstName string  `json:"given_name"`
+	LastName  string  `json:"family_name"`
 	Event     []Event `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
@@ -41,33 +40,26 @@ type Ticket struct {
 	Event   Event `gorm:"foreignKey:EventID"`
 }
 
+var DB *gorm.DB
+
 // connection to database
-func ConnectDB() *gorm.DB {
+func ConnectDB() {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 	dsn := os.Getenv("db_url")
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Error opening DB", err)
 	}
 	fmt.Println("connected to DB")
-
-	return db
 }
 
 // creates a new user if not already existing
-func CreateUser(name string, email string, firstName string, lastName string, db *gorm.DB) {
-	user := User{
-		Name:      name,
-		Email:     email,
-		FirstName: firstName,
-		LastName:  lastName,
-	}
-
+func CreateUser(user User, db *gorm.DB) {
 	// checking if user already exists
-	result := db.Where("email = ?", email).First(&user)
+	result := db.Where("email = ?", user.Email).First(&user)
 
 	if result.RowsAffected == 0 {
 		result = db.Create(&user)

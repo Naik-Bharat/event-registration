@@ -1,14 +1,20 @@
 package controller
 
 import (
-	"fmt"
-	"io/ioutil"
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 
 	config "github.com/Naik-Bharat/event-registration/auth"
+	"github.com/Naik-Bharat/event-registration/database"
 	"github.com/gofiber/fiber/v2"
 )
+
+func Index(ctx *fiber.Ctx) error {
+	err := ctx.SendString("hello")
+	return err
+}
 
 func GoogleCallback(ctx *fiber.Ctx) error {
 	googleConfig := config.Config()
@@ -22,14 +28,19 @@ func GoogleCallback(ctx *fiber.Ctx) error {
 		log.Fatal("Error fetching users details", err)
 	}
 
-	userData, err := ioutil.ReadAll(res.Body)
+	userData, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Fatal("Error reading user data", err)
 	}
 
-	fmt.Println(string(userData))
+	user := database.User{}
+	err = json.Unmarshal(userData, &user)
+	if err != nil {
+		log.Fatal("Error converting user data to struct", err)
+	}
+	database.CreateUser(user, database.DB)
 
-	err = ctx.SendString("hello")
+	err = ctx.Redirect("/")
 	return err
 }
 

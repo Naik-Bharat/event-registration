@@ -7,10 +7,15 @@ import (
 )
 
 func main() {
-	db := database.ConnectDB()
+	// Database
+	database.ConnectDB()
+	db := database.DB
 	database.AutoMigrate(db)
+
+	// web app
 	app := fiber.New()
 	app.Get("/auth/google/login", controller.GoogleLogin)
 	app.Get("/auth/google/callback", controller.GoogleCallback)
+	app.Get("/", controller.Index)
 	app.Listen(":8080")
 }
