@@ -57,34 +57,29 @@ func ConnectDB() {
 }
 
 // add a new event
-func AddEvent(event Event) {
+func AddEvent(event Event) error {
 	result := DB.Create(&event)
-	if result.Error != nil {
-		log.Fatal("Error adding event", result.Error)
-	}
+	return result.Error
 }
 
-func BookTicket(ticket Ticket) {
+func BookTicket(ticket Ticket) error {
 	result := DB.Create(&ticket)
-	if result.Error != nil {
-		log.Fatal("Error adding ticket", result.Error)
-	}
+	return result.Error
 }
 
 // creates a new user if not already existing
-func CreateUser(user User) {
+func CreateUser(user User) error {
 	// checking if user already exists
 	result := DB.Where("email = ?", user.Email).First(&user)
 
 	if result.RowsAffected == 0 {
 		result = DB.Create(&user)
-		if result.Error != nil {
-			log.Fatal("Error creating user", result.Error)
-		}
 		fmt.Println("New user created", user)
+		return result.Error
 	} else {
 		fmt.Println(user, "already exists")
 	}
+	return nil
 }
 
 // sets up database schema
