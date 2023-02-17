@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 
 	config "github.com/Naik-Bharat/event-registration/auth"
 	"github.com/Naik-Bharat/event-registration/database"
@@ -58,7 +57,7 @@ func AddEvent(ctx *fiber.Ctx) error {
 	err := ctx.BodyParser(body)
 	if err != nil {
 		println("Cannot parse params", err)
-		err = ctx.SendStatus(fiber.StatusInternalServerError)
+		err = ctx.SendStatus(fiber.StatusBadRequest)
 		return err
 	}
 	err = database.AddEvent(*body)
@@ -74,23 +73,16 @@ func AddEvent(ctx *fiber.Ctx) error {
 }
 
 func BookTicket(ctx *fiber.Ctx) error {
-	body := ctx.AllParams()
-	fmt.Println(body)
-	userID, err := strconv.Atoi(body["user_id"])
+	body := new(database.Ticket)
+	err := ctx.BodyParser(body)
 	if err != nil {
-		println("Error converting user ID to int")
-		err = ctx.SendStatus(fiber.StatusBadRequest)
-		return err
-	}
-	eventID, err := strconv.Atoi(body["eventID"])
-	if err != nil {
-		println("Error converting event ID to int")
+		println("Cannot parse params", err)
 		err = ctx.SendStatus(fiber.StatusBadRequest)
 		return err
 	}
 	ticket := database.Ticket{
-		UserID:  uint(userID),
-		EventID: uint(eventID),
+		UserID:  uint(body.UserID),
+		EventID: uint(body.EventID),
 	}
 	database.BookTicket(ticket)
 
